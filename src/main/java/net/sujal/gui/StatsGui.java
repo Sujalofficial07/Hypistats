@@ -2,6 +2,7 @@ package net.sujal.gui;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.sujal.SkyblockCore;
 import net.sujal.stats.StatType;
 import org.bukkit.Material;
@@ -15,128 +16,172 @@ import java.util.UUID;
 
 public class StatsGui {
 
-    // Helper method to format numbers like 1208.1
-    private static String fmt(double value) {
-        return String.format("%.1f", value);
-    }
-
-    // Main Menu: Equipment and Stats
+    // ==========================================
+    // 1. MAIN MENU: "Your Equipment and Stats"
+    // ==========================================
     public static void openMainMenu(Player player, SkyblockCore plugin) {
         MenuBuilder menu = new MenuBuilder(54, Component.text("Your Equipment and Stats", NamedTextColor.DARK_GRAY));
-        fillBackground(menu);
         UUID uuid = player.getUniqueId();
 
-        // Combat Stats Icon
-        ItemStack combatItem = createIcon(Material.IRON_SWORD, "§cCombat Stats",
-                "§7Gives you a better chance at", "§7fighting strong monsters.", "",
-                "§7Health: §c" + fmt(plugin.getApi().getFinalStat(uuid, StatType.MAX_HEALTH)),
-                "§7Defense: §a" + fmt(plugin.getApi().getFinalStat(uuid, StatType.DEFENSE)),
-                "§7Strength: §c" + fmt(plugin.getApi().getFinalStat(uuid, StatType.STRENGTH)),
-                "", "§eClick for details!");
-        
-        // Gathering Stats Icon
-        ItemStack gatheringItem = createIcon(Material.STONE_PICKAXE, "§aGathering Stats",
-                "§7Lets you collect and harvest", "§7better items, or more of them.", "",
-                "§7Mining Fortune: §6" + fmt(plugin.getApi().getFinalStat(uuid, StatType.MINING_FORTUNE)),
-                "§7Farming Fortune: §6" + fmt(plugin.getApi().getFinalStat(uuid, StatType.FARMING_FORTUNE)),
-                "§7Foraging Fortune: §6" + fmt(plugin.getApi().getFinalStat(uuid, StatType.FORAGING_FORTUNE)),
-                "", "§eClick for details!");
-
-        // Misc Stats Icon
-        ItemStack miscItem = createIcon(Material.COMPASS, "§bMisc Stats",
-                "§7Augments various aspects of your", "§7gameplay!", "",
-                "§7Speed: §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.SPEED)),
-                "§7Magic Find: §b" + fmt(plugin.getApi().getFinalStat(uuid, StatType.MAGIC_FIND)),
-                "§7Pet Luck: §d" + fmt(plugin.getApi().getFinalStat(uuid, StatType.PET_LUCK)),
-                "", "§eClick for details!");
-
-        menu.getInventory().setItem(24, combatItem);
-        menu.getInventory().setItem(25, gatheringItem);
-        menu.getInventory().setItem(26, miscItem);
-
-        player.openInventory(menu.getInventory());
-    }
-
-    // Sub-Menu: Combat Breakdown
-    public static void openCombatStats(Player player, SkyblockCore plugin) {
-        MenuBuilder menu = new MenuBuilder(54, Component.text("Your Stats Breakdown", NamedTextColor.DARK_GRAY));
-        fillBackground(menu);
-        UUID uuid = player.getUniqueId();
-
-        // Exact icons matching the video
-        menu.getInventory().setItem(10, createIcon(Material.GOLDEN_APPLE, "§c❤ Health §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.MAX_HEALTH)), "§7Increases your maximum health."));
-        menu.getInventory().setItem(11, createIcon(Material.IRON_CHESTPLATE, "§a❈ Defense §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.DEFENSE)), "§7Reduces the damage that you", "§7take from enemies."));
-        menu.getInventory().setItem(12, createIcon(Material.BLAZE_POWDER, "§c❁ Strength §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.STRENGTH)), "§7Increases the damage you deal."));
-        menu.getInventory().setItem(13, createIcon(Material.BOOK, "§9☣ Crit Chance §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.CRIT_CHANCE)) + "%", "§7Chance to land a Critical Hit."));
-        menu.getInventory().setItem(14, createIcon(Material.DIAMOND_SWORD, "§9☠ Crit Damage §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.CRIT_DAMAGE)) + "%", "§7Multiplies damage on a Critical Hit."));
-        menu.getInventory().setItem(15, createIcon(Material.GOLDEN_AXE, "§e⚔ Bonus Attack Speed §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.ATTACK_SPEED)), "§7Decreases time between hits."));
-        menu.getInventory().setItem(16, createIcon(Material.BEACON, "§c๑ Ability Damage §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.ABILITY_DAMAGE)) + "%", "§7Increases damage of spells."));
-        
-        menu.getInventory().setItem(19, createIcon(Material.WHITE_DYE, "§f❂ True Defense §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.TRUE_DEFENSE)), "§7Reduces True Damage taken."));
-        menu.getInventory().setItem(20, createIcon(Material.RED_DYE, "§c⫽ Ferocity §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.FEROCITY)), "§7Chance to double-strike enemies."));
-        menu.getInventory().setItem(21, createIcon(Material.GLISTERING_MELON_SLICE, "§4♨ Vitality §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.VITALITY)), "§7Increases incoming healing."));
-        menu.getInventory().setItem(22, createIcon(Material.FISHING_ROD, "§e↹ Swing Range §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.SWING_RANGE)), "§7Increases your melee hit range."));
-
-        addBackButton(menu);
-        player.openInventory(menu.getInventory());
-    }
-
-    // Sub-Menu: Gathering Breakdown
-    public static void openGatheringStats(Player player, SkyblockCore plugin) {
-        MenuBuilder menu = new MenuBuilder(54, Component.text("Your Stats Breakdown", NamedTextColor.DARK_GRAY));
-        fillBackground(menu);
-        UUID uuid = player.getUniqueId();
-
-        menu.getInventory().setItem(10, createIcon(Material.DIAMOND_PICKAXE, "§6☘ Mining Fortune §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.MINING_FORTUNE)), "§7Chance to get multiple drops from ores."));
-        menu.getInventory().setItem(11, createIcon(Material.GOLDEN_HOE, "§6☘ Farming Fortune §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.FARMING_FORTUNE)), "§7Chance to get multiple drops from crops."));
-        menu.getInventory().setItem(12, createIcon(Material.OAK_SAPLING, "§6☘ Foraging Fortune §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.FORAGING_FORTUNE)), "§7Chance to get multiple drops from wood."));
-
-        addBackButton(menu);
-        player.openInventory(menu.getInventory());
-    }
-
-    // Sub-Menu: Misc Breakdown
-    public static void openMiscStats(Player player, SkyblockCore plugin) {
-        MenuBuilder menu = new MenuBuilder(54, Component.text("Your Stats Breakdown", NamedTextColor.DARK_GRAY));
-        fillBackground(menu);
-        UUID uuid = player.getUniqueId();
-
-        menu.getInventory().setItem(10, createIcon(Material.SUGAR, "§f✦ Speed §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.SPEED)), "§7Increases how fast you walk."));
-        menu.getInventory().setItem(11, createIcon(Material.PRISMARINE_CRYSTALS, "§b✯ Magic Find §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.MAGIC_FIND)), "§7Increases how many rare items you find."));
-        menu.getInventory().setItem(12, createIcon(Material.BONE, "§d♣ Pet Luck §f" + fmt(plugin.getApi().getFinalStat(uuid, StatType.PET_LUCK)), "§7Increases chance to craft/find rare pets."));
-
-        addBackButton(menu);
-        player.openInventory(menu.getInventory());
-    }
-
-    // --- Utility Methods ---
-    private static void fillBackground(MenuBuilder menu) {
+        // Filler Glass Pane (Background)
         ItemStack glass = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();
         glassMeta.displayName(Component.text(" "));
         glass.setItemMeta(glassMeta);
-        for (int i = 0; i < 54; i++) menu.getInventory().setItem(i, glass);
+
+        // Fill right side background like Hypixel
+        for (int i = 0; i < 54; i++) {
+            if (i % 9 > 4) menu.getInventory().setItem(i, glass); 
+        }
+
+        // ==========================================
+        // CATEGORY ICONS
+        // ==========================================
+
+        // 1. Combat Stats (Iron Sword - Slot 23)
+        ItemStack combatItem = new ItemStack(Material.IRON_SWORD);
+        ItemMeta combatMeta = combatItem.getItemMeta();
+        combatMeta.displayName(Component.text("Combat Stats", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        List<Component> combatLore = new ArrayList<>();
+        combatLore.add(Component.text("Gives you a better chance at", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        combatLore.add(Component.text("fighting strong monsters.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        combatLore.add(Component.text(" "));
+        combatLore.add(Component.text("❤ Health ", NamedTextColor.RED).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.MAX_HEALTH), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        combatLore.add(Component.text("❈ Defense ", NamedTextColor.GREEN).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.DEFENSE), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        combatLore.add(Component.text("❁ Strength ", NamedTextColor.RED).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.STRENGTH), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        combatLore.add(Component.text(" "));
+        combatLore.add(Component.text("Click for details!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        combatMeta.lore(combatLore);
+        combatItem.setItemMeta(combatMeta);
+
+        // 2. Gathering Stats (Diamond Pickaxe - Slot 24)
+        ItemStack gatheringItem = new ItemStack(Material.DIAMOND_PICKAXE);
+        ItemMeta gatherMeta = gatheringItem.getItemMeta();
+        gatherMeta.displayName(Component.text("Gathering Stats", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+        List<Component> gatherLore = new ArrayList<>();
+        gatherLore.add(Component.text("Lets you collect and harvest", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        gatherLore.add(Component.text("better items, or more of them.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        gatherLore.add(Component.text(" "));
+        gatherLore.add(Component.text("☘ Mining Fortune ", NamedTextColor.GOLD).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.MINING_FORTUNE), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        gatherLore.add(Component.text("☘ Farming Fortune ", NamedTextColor.GOLD).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.FARMING_FORTUNE), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        gatherLore.add(Component.text(" "));
+        gatherLore.add(Component.text("Click for details!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        gatherMeta.lore(gatherLore);
+        gatheringItem.setItemMeta(gatherMeta);
+
+        // 3. Misc Stats (Compass/Clock - Slot 25)
+        ItemStack miscItem = new ItemStack(Material.COMPASS);
+        ItemMeta miscMeta = miscItem.getItemMeta();
+        miscMeta.displayName(Component.text("Misc Stats", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        List<Component> miscLore = new ArrayList<>();
+        miscLore.add(Component.text("Augments various aspects of your", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        miscLore.add(Component.text("gameplay!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        miscLore.add(Component.text(" "));
+        miscLore.add(Component.text("✦ Speed ", NamedTextColor.WHITE).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.SPEED), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        miscLore.add(Component.text("✯ Magic Find ", NamedTextColor.AQUA).append(Component.text(plugin.getApi().getFinalStat(uuid, StatType.MAGIC_FIND), NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
+        miscLore.add(Component.text(" "));
+        miscLore.add(Component.text("Click for details!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        miscMeta.lore(miscLore);
+        miscItem.setItemMeta(miscMeta);
+
+        // Close Button
+        menu.getInventory().setItem(49, createCloseButton());
+
+        menu.getInventory().setItem(23, combatItem);
+        menu.getInventory().setItem(24, gatheringItem);
+        menu.getInventory().setItem(25, miscItem);
+
+        player.openInventory(menu.getInventory());
     }
 
-    private static void addBackButton(MenuBuilder menu) {
-        ItemStack back = new ItemStack(Material.ARROW);
-        ItemMeta backMeta = back.getItemMeta();
-        backMeta.displayName(Component.text("§aGo Back"));
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("§7To Your Equipment and Stats"));
-        backMeta.lore(lore);
-        back.setItemMeta(backMeta);
-        menu.getInventory().setItem(49, back);
+    // ==========================================
+    // 2. COMBAT STATS BREAKDOWN
+    // ==========================================
+    public static void openCombatMenu(Player player, SkyblockCore plugin) {
+        MenuBuilder menu = new MenuBuilder(54, Component.text("Your Stats Breakdown", NamedTextColor.DARK_GRAY));
+        UUID uuid = player.getUniqueId();
+
+        menu.getInventory().setItem(10, createStatItem(Material.GOLDEN_APPLE, "❤ Health", plugin.getApi().getFinalStat(uuid, StatType.MAX_HEALTH), NamedTextColor.RED, "Your Health stat increases your maximum health."));
+        menu.getInventory().setItem(11, createStatItem(Material.IRON_CHESTPLATE, "❈ Defense", plugin.getApi().getFinalStat(uuid, StatType.DEFENSE), NamedTextColor.GREEN, "Reduces the damage that you take from enemies."));
+        menu.getInventory().setItem(12, createStatItem(Material.BLAZE_POWDER, "❁ Strength", plugin.getApi().getFinalStat(uuid, StatType.STRENGTH), NamedTextColor.RED, "Strength increases the damage you deal."));
+        menu.getInventory().setItem(13, createStatItem(Material.ENCHANTED_BOOK, "✎ Intelligence", plugin.getApi().getFinalStat(uuid, StatType.INTELLIGENCE), NamedTextColor.AQUA, "Intelligence increases your maximum Mana."));
+        menu.getInventory().setItem(14, createStatItem(Material.SPIDER_EYE, "☣ Crit Chance", plugin.getApi().getFinalStat(uuid, StatType.CRIT_CHANCE), NamedTextColor.BLUE, "Chance that you land a Critical Hit."));
+        menu.getInventory().setItem(15, createStatItem(Material.ROTTEN_FLESH, "☠ Crit Damage", plugin.getApi().getFinalStat(uuid, StatType.CRIT_DAMAGE), NamedTextColor.BLUE, "Multiplies the damage when you land a Critical Hit."));
+        
+        menu.getInventory().setItem(19, createStatItem(Material.STONE_SWORD, "⚔ Bonus Attack Speed", plugin.getApi().getFinalStat(uuid, StatType.ATTACK_SPEED), NamedTextColor.YELLOW, "Decreases the time between hits."));
+        menu.getInventory().setItem(20, createStatItem(Material.GHAST_TEAR, "❂ True Defense", plugin.getApi().getFinalStat(uuid, StatType.TRUE_DEFENSE), NamedTextColor.WHITE, "Reduces True Damage taken."));
+        menu.getInventory().setItem(21, createStatItem(Material.QUARTZ, "⫽ Ferocity", plugin.getApi().getFinalStat(uuid, StatType.FEROCITY), NamedTextColor.RED, "Chance to double-strike enemies."));
+        menu.getInventory().setItem(22, createStatItem(Material.RED_DYE, "❣ Vitality", plugin.getApi().getFinalStat(uuid, StatType.VITALITY), NamedTextColor.DARK_RED, "Increases incoming healing."));
+
+        addNavButtons(menu);
+        player.openInventory(menu.getInventory());
     }
 
-    private static ItemStack createIcon(Material mat, String name, String... loreLines) {
+    // ==========================================
+    // 3. GATHERING STATS BREAKDOWN
+    // ==========================================
+    public static void openGatheringMenu(Player player, SkyblockCore plugin) {
+        MenuBuilder menu = new MenuBuilder(54, Component.text("Your Stats Breakdown", NamedTextColor.DARK_GRAY));
+        UUID uuid = player.getUniqueId();
+
+        menu.getInventory().setItem(10, createStatItem(Material.DIAMOND_PICKAXE, "☘ Mining Fortune", plugin.getApi().getFinalStat(uuid, StatType.MINING_FORTUNE), NamedTextColor.GOLD, "Chance to get multiple drops from ores."));
+        menu.getInventory().setItem(11, createStatItem(Material.GOLDEN_HOE, "☘ Farming Fortune", plugin.getApi().getFinalStat(uuid, StatType.FARMING_FORTUNE), NamedTextColor.GOLD, "Chance to get multiple drops from crops."));
+        menu.getInventory().setItem(12, createStatItem(Material.IRON_AXE, "☘ Foraging Fortune", plugin.getApi().getFinalStat(uuid, StatType.FORAGING_FORTUNE), NamedTextColor.GOLD, "Chance to get multiple drops from logs."));
+
+        addNavButtons(menu);
+        player.openInventory(menu.getInventory());
+    }
+
+    // ==========================================
+    // 4. MISC STATS BREAKDOWN
+    // ==========================================
+    public static void openMiscMenu(Player player, SkyblockCore plugin) {
+        MenuBuilder menu = new MenuBuilder(54, Component.text("Your Stats Breakdown", NamedTextColor.DARK_GRAY));
+        UUID uuid = player.getUniqueId();
+
+        menu.getInventory().setItem(10, createStatItem(Material.SUGAR, "✦ Speed", plugin.getApi().getFinalStat(uuid, StatType.SPEED), NamedTextColor.WHITE, "Increases how fast you can walk."));
+        menu.getInventory().setItem(11, createStatItem(Material.PRISMARINE_CRYSTALS, "α Sea Creature Chance", plugin.getApi().getFinalStat(uuid, StatType.SEA_CREATURE_CHANCE), NamedTextColor.DARK_AQUA, "Chance to catch Sea Creatures."));
+        menu.getInventory().setItem(12, createStatItem(Material.BLAZE_POWDER, "✯ Magic Find", plugin.getApi().getFinalStat(uuid, StatType.MAGIC_FIND), NamedTextColor.AQUA, "Increases how many rare items you find."));
+        menu.getInventory().setItem(13, createStatItem(Material.BONE, "♣ Pet Luck", plugin.getApi().getFinalStat(uuid, StatType.PET_LUCK), NamedTextColor.LIGHT_PURPLE, "Increases chance to find pets and craft higher tiers."));
+
+        addNavButtons(menu);
+        player.openInventory(menu.getInventory());
+    }
+
+    // ==========================================
+    // HELPER METHODS
+    // ==========================================
+    private static void addNavButtons(MenuBuilder menu) {
+        ItemStack backArrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = backArrow.getItemMeta();
+        arrowMeta.displayName(Component.text("Go Back", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+        List<Component> arrowLore = new ArrayList<>();
+        arrowLore.add(Component.text("To Your Equipment and Stats", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        arrowMeta.lore(arrowLore);
+        backArrow.setItemMeta(arrowMeta);
+
+        menu.getInventory().setItem(48, backArrow);
+        menu.getInventory().setItem(49, createCloseButton());
+    }
+
+    private static ItemStack createCloseButton() {
+        ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemMeta meta = barrier.getItemMeta();
+        meta.displayName(Component.text("Close", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        barrier.setItemMeta(meta);
+        return barrier;
+    }
+
+    private static ItemStack createStatItem(Material mat, String name, double value, NamedTextColor color, String desc) {
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(name));
+        
+        // Remove decimal if it's a whole number for cleaner look
+        String valStr = (value % 1 == 0) ? String.valueOf((int) value) : String.format("%.1f", value);
+        
+        meta.displayName(Component.text(name + " " + valStr, color).decoration(TextDecoration.ITALIC, false));
         List<Component> lore = new ArrayList<>();
-        for (String line : loreLines) {
-            lore.add(Component.text(line));
-        }
+        lore.add(Component.text(desc, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
