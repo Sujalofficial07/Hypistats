@@ -39,22 +39,19 @@ public class StatsGui {
         // ==========================================
         // EQUIPMENT PLACEHOLDERS (Left Side)
         // ==========================================
-        // Video showed mostly empty but structured. Standard Hypixel has Armor.
-        // I will place placeholder armor items that are not wearable but act as slots.
-        menu.getInventory().setItem(10, createPlaceholder(Material.BARRIER, "§7Armor Slot")); // Helmet placeholder
-        menu.getInventory().setItem(19, createPlaceholder(Material.BARRIER, "§7Armor Slot")); // Chestplate placeholder
-        menu.getInventory().setItem(28, createPlaceholder(Material.BARRIER, "§7Armor Slot")); // Leggings placeholder
-        menu.getInventory().setItem(37, createPlaceholder(Material.BARRIER, "§7Armor Slot")); // Boots placeholder
+        menu.getInventory().setItem(10, createPlaceholder(Material.BARRIER, "§7Empty Helmet Slot"));
+        menu.getInventory().setItem(19, createPlaceholder(Material.BARRIER, "§7Empty Chestplate Slot"));
+        menu.getInventory().setItem(28, createPlaceholder(Material.BARRIER, "§7Empty Leggings Slot"));
+        menu.getInventory().setItem(37, createPlaceholder(Material.BARRIER, "§7Empty Boots Slot"));
 
-        // Pet Placeholder (e.g., Slot 13, 22, 31) - Let's use 22 for now as Pet Slot
-        menu.getInventory().setItem(22, createPlaceholder(Material.PET_SLOT, "§7Pet Slot")); 
-
+        // Pet Placeholder - FIXED: Changed Material.PET_SLOT to Material.BONE
+        menu.getInventory().setItem(22, createPlaceholder(Material.BONE, "§7Empty Pet Slot")); 
 
         // ==========================================
         // CATEGORY ICONS (Right Side)
         // ==========================================
 
-        // 1. Combat Stats (Iron Sword - Slot 23)
+        // 1. Combat Stats
         ItemStack combatItem = new ItemStack(Material.IRON_SWORD);
         ItemMeta combatMeta = combatItem.getItemMeta();
         combatMeta.displayName(Component.text("Combat Stats", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
@@ -70,7 +67,7 @@ public class StatsGui {
         combatMeta.lore(combatLore);
         combatItem.setItemMeta(combatMeta);
 
-        // 2. Gathering Stats (Diamond Pickaxe - Slot 24)
+        // 2. Gathering Stats
         ItemStack gatheringItem = new ItemStack(Material.DIAMOND_PICKAXE);
         ItemMeta gatherMeta = gatheringItem.getItemMeta();
         gatherMeta.displayName(Component.text("Gathering Stats", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
@@ -85,7 +82,7 @@ public class StatsGui {
         gatherMeta.lore(gatherLore);
         gatheringItem.setItemMeta(gatherMeta);
 
-        // 3. Misc Stats (Compass - Slot 25)
+        // 3. Misc Stats
         ItemStack miscItem = new ItemStack(Material.COMPASS);
         ItemMeta miscMeta = miscItem.getItemMeta();
         miscMeta.displayName(Component.text("Misc Stats", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
@@ -121,7 +118,6 @@ public class StatsGui {
         menu.getInventory().setItem(11, createStatItem(Material.IRON_CHESTPLATE, "❈ Defense", plugin.getApi().getFinalStat(uuid, StatType.DEFENSE), NamedTextColor.GREEN, "Reduces the damage that you take from enemies."));
         menu.getInventory().setItem(12, createStatItem(Material.BLAZE_POWDER, "❁ Strength", plugin.getApi().getFinalStat(uuid, StatType.STRENGTH), NamedTextColor.RED, "Strength increases the damage you deal."));
         menu.getInventory().setItem(13, createStatItem(Material.ENCHANTED_BOOK, "✎ Intelligence", plugin.getApi().getFinalStat(uuid, StatType.INTELLIGENCE), NamedTextColor.AQUA, "Intelligence increases your maximum Mana."));
-        // Crit Chance/Damage might use special player heads (zombie or specific players). Using a placeholder skull.
         menu.getInventory().setItem(14, createStatItem(Material.SPIDER_EYE, "☣ Crit Chance", plugin.getApi().getFinalStat(uuid, StatType.CRIT_CHANCE), NamedTextColor.BLUE, "Chance that you land a Critical Hit."));
         menu.getInventory().setItem(15, createStatItem(Material.ROTTEN_FLESH, "☠ Crit Damage", plugin.getApi().getFinalStat(uuid, StatType.CRIT_DAMAGE), NamedTextColor.BLUE, "Multiplies the damage when you land a Critical Hit."));
         
@@ -169,7 +165,7 @@ public class StatsGui {
     // HELPER METHODS
     // ==========================================
     private static void addNavButtons(MenuBuilder menu) {
-        // Go Back (Slot 48) like Hypixel video
+        // Go Back (Slot 48)
         ItemStack backArrow = new ItemStack(Material.ARROW);
         ItemMeta arrowMeta = backArrow.getItemMeta();
         arrowMeta.displayName(Component.text("Go Back", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
@@ -179,7 +175,7 @@ public class StatsGui {
         backArrow.setItemMeta(arrowMeta);
 
         menu.getInventory().setItem(48, backArrow);
-        // Close Button (Slot 49) like Hypixel video
+        // Close Button (Slot 49)
         menu.getInventory().setItem(49, createCloseButton());
     }
 
@@ -192,10 +188,6 @@ public class StatsGui {
     }
 
     private static ItemStack createPlaceholder(Material mat, String name) {
-        // Using a non-existent item material if possible for true placeholder, but for now a barrier or similar will do
-        // Since we can't create custom materials easily, let's stick to simple ones.
-        // For a pet slot, maybe use a barrier or a skull?
-        // For Armor Slot, a barrier for now.
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text(name, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
@@ -217,4 +209,4 @@ public class StatsGui {
         item.setItemMeta(meta);
         return item;
     }
-            }
+}
