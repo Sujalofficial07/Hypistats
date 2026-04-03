@@ -2,6 +2,7 @@ package net.sujal.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.sujal.SkyblockCore;
 import net.sujal.api.StatsAPI;
 import net.sujal.stats.shared.StatType;
 import org.bukkit.Bukkit;
@@ -26,12 +27,25 @@ public class DevStatCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /stat <set/add/get/inspect> <player> [stat] [value]", NamedTextColor.RED));
+        if (args.length < 1) {
+            sender.sendMessage(Component.text("Usage: /stat <set/add/get/inspect/menu/reload> [player] [stat] [value]", NamedTextColor.RED));
             return true;
         }
 
         String action = args[0].toLowerCase();
+
+        // Reload Command
+        if (action.equals("reload")) {
+            SkyblockCore.getInstance().getConfigManager().reloadConfig();
+            sender.sendMessage(Component.text("Config aur Menus reload ho gaye!", NamedTextColor.GREEN));
+            return true;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(Component.text("Usage requires a player name for this action.", NamedTextColor.RED));
+            return true;
+        }
+
         Player target = Bukkit.getPlayer(args[1]);
 
         if (target == null) {
@@ -39,6 +53,14 @@ public class DevStatCommand implements CommandExecutor {
             return true;
         }
 
+        // Open GUI Menu Command
+        if (action.equals("menu")) {
+            net.sujal.gui.StatsMenu.open(target, target, statsAPI);
+            sender.sendMessage(Component.text("Opened GUI for " + target.getName(), NamedTextColor.GREEN));
+            return true;
+        }
+
+        // Inspect Stats Command
         if (action.equals("inspect")) {
             sender.sendMessage(Component.text("Stats for " + target.getName() + ":", NamedTextColor.GREEN));
             for (StatType type : StatType.values()) {
@@ -60,28 +82,33 @@ public class DevStatCommand implements CommandExecutor {
             return true;
         }
 
+        // Get Stat Command
         if (action.equals("get")) {
             sender.sendMessage(Component.text(statType.name() + " = " + statsAPI.getFinalStat(target.getUniqueId(), statType), NamedTextColor.GREEN));
             return true;
         }
-       if (action.equals("reload")) {
-           SkyblockCore.getInstance().getConfigManager().reloadConfig();
-           sender.sendMessage(Component.text("Config aur Menus reload ho gaye!", NamedTextColor.GREEN));
-           return true;
-        }
-    
 
         if (args.length < 4) return false;
-        double value = Double.parseDouble(args[3]);
+        double value;
+        try {
+            value = Double.parseDouble(args[3]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(Component.text("Invalid number format.", NamedTextColor.RED));
+            return true;
+        }
 
+        // Set & Add Stat Commands
         switch (action) {
             case "set":
                 statsAPI.setStat(target.getUniqueId(), statType, value);
-                sender.sendMessage(Component.text("Set " + statType.name() + " to " + value, NamedTextColor.GREEN));
+                sender.sendMessage(Component.text("Set " + statType.name() + " to " + value + " for " + target.getName(), NamedTextColor.GREEN));
                 break;
             case "add":
                 statsAPI.addStat(target.getUniqueId(), statType, value);
-                sender.sendMessage(Component.text("Added " + value + " to " + statType.name(), NamedTextColor.GREEN));
+                sender.sendMessage(Component.text("Added " + value + " to " + statType.name() + " for " + target.getName(), NamedTextColor.GREEN));
+                break;
+            default:
+                sender.sendMessage(Component.text("Unknown action.", NamedTextColor.RED));
                 break;
         }
         return true;
