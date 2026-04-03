@@ -17,7 +17,6 @@ public class DamageIndicator {
     private static final DecimalFormat df = new DecimalFormat("#,###");
 
     public static void spawn(Location loc, double damage, boolean isCrit) {
-        // Hologram ko thoda random position pe spawn karna taaki overlap na ho
         double offsetX = (Math.random() - 0.5) * 1.5;
         double offsetY = Math.random() * 0.5 + 1.0;
         double offsetZ = (Math.random() - 0.5) * 1.5;
@@ -28,12 +27,13 @@ public class DamageIndicator {
             Component text;
 
             if (isCrit) {
-                // Hypixel style colorful crit: ✧ 123 ✧
-                text = Component.text("✧ " + damageString + " ✧")
-                        .color(NamedTextColor.GOLD)
+                // Hypixel Style Crit: ✨ 1,234 ✨
+                text = Component.text("✧ ", NamedTextColor.WHITE)
+                        .append(Component.text(damageString, NamedTextColor.RED)) // Yellow/Red is common for crits
+                        .append(Component.text(" ✧", NamedTextColor.WHITE))
                         .decorate(TextDecoration.BOLD);
             } else {
-                text = Component.text(damageString).color(NamedTextColor.GRAY);
+                text = Component.text(damageString, NamedTextColor.GRAY);
             }
 
             display.text(text);
@@ -43,12 +43,11 @@ public class DamageIndicator {
             display.setTransformation(new Transformation(
                     new Vector3f(),
                     new AxisAngle4f(),
-                    new Vector3f(1.5f, 1.5f, 1.5f), // Scale up thoda
+                    new Vector3f(1.5f, 1.5f, 1.5f),
                     new AxisAngle4f()
             ));
 
-            // Despawn after 1.5 seconds (30 ticks)
-            SkyblockCore.getInstance().getServer().getScheduler().runTaskLater(SkyblockCore.getInstance(), display::remove, 30L);
+            SkyblockCore.getInstance().getServer().getScheduler().runTaskLater(SkyblockCore.getInstance(), display::remove, 25L);
         });
     }
 }
