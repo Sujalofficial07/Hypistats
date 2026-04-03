@@ -1,0 +1,20 @@
+settings:
+  debug-mode: false
+  save-interval-minutes: 5
+  health-scaling-max: 40.0 # Maximum visual hearts (20 full hearts)
+  regen-interval-ticks: 40 # 2 seconds
+
+caps:
+  CRIT_CHANCE: 100.0
+  SPEED: 400.0
+  BONUS_ATTACK_SPEED: 100.0
+
+default-stats:
+  HEALTH: 100.0
+  DEFENSE: 0.0
+  STRENGTH: 0.0
+  CRIT_CHANCE: 30.0
+  CRIT_DAMAGE: 50.0
+  MANA: 100.0
+  SPEED: 100.0
+  
