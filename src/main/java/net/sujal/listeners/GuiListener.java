@@ -1,5 +1,6 @@
 package net.sujal.listeners;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.sujal.SkyblockCore;
 import net.sujal.gui.MenuBuilder;
 import net.sujal.gui.StatsGui;
@@ -21,29 +22,43 @@ public class GuiListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof MenuBuilder)) return;
-        
-        event.setCancelled(true); // Stop stealing items
-        
-        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-        if (!(event.getWhoClicked() instanceof Player player)) return;
+        if (event.getInventory().getHolder() instanceof MenuBuilder) {
+            event.setCancelled(true); // Stop players from stealing items!
+            
+            Player player = (Player) event.getWhoClicked();
+            ItemStack clickedItem = event.getCurrentItem();
+            
+            if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
 
-        ItemStack clicked = event.getCurrentItem();
-        if (!clicked.hasItemMeta() || !clicked.getItemMeta().hasDisplayName()) return;
+            String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
 
-        String itemName = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(clicked.getItemMeta().displayName());
-
-        // Handle Main Menu Navigation
-        if (itemName.contains("Combat Stats")) {
-            StatsGui.openCombatStats(player, plugin);
-        } else if (itemName.contains("Gathering Stats")) {
-            StatsGui.openGatheringStats(player, plugin);
-        } else if (itemName.contains("Misc Stats")) {
-            StatsGui.openMiscStats(player, plugin);
-        } 
-        // Handle Back Button
-        else if (itemName.contains("Go Back")) {
-            StatsGui.openMainMenu(player, plugin);
+            // MAIN MENU LOGIC
+            if (title.equals("Your Equipment and Stats")) {
+                if (clickedItem.getType() == Material.IRON_SWORD) {
+                    StatsGui.openCombatMenu(player, plugin);
+                } 
+                else if (clickedItem.getType() == Material.DIAMOND_PICKAXE) {
+                    StatsGui.openGatheringMenu(player, plugin);
+                } 
+                else if (clickedItem.getType() == Material.COMPASS) {
+                    StatsGui.openMiscMenu(player, plugin);
+                }
+                else if (clickedItem.getType() == Material.BARRIER && event.getRawSlot() == 49) {
+                    player.closeInventory();
+                }
+            }
+            
+            // SUB-MENU LOGIC ("Your Stats Breakdown")
+            else if (title.equals("Your Stats Breakdown")) {
+                // "Go Back" Arrow -> Back to Main Menu
+                if (event.getRawSlot() == 48 && clickedItem.getType() == Material.ARROW) {
+                    StatsGui.openMainMenu(player, plugin);
+                }
+                // "Close" Barrier -> Close Inventory
+                else if (event.getRawSlot() == 49 && clickedItem.getType() == Material.BARRIER) {
+                    player.closeInventory();
+                }
+            }
         }
     }
 
