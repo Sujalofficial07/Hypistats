@@ -3,14 +3,18 @@ version: '1.0.0'
 main: net.sujal.SkyblockCore
 api-version: '1.21'
 authors: [Sujal]
+softdepend: [PlaceholderAPI]
 description: Hypixel-style SkyBlock Core Stats Engine
 commands:
   stat:
     description: Developer stat management command
     permission: skyblock.admin
-    aliases: [stats]
+    aliases: [setstat]
+  stats:
+    description: View your SkyBlock profile
+    aliases: [profile, menu]
 permissions:
   skyblock.admin:
     description: Allows management of player stats
     default: op
-softdepend: [PlaceholderAPI]
+    
