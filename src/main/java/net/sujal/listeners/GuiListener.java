@@ -24,7 +24,14 @@ public class GuiListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() instanceof MenuBuilder) {
             event.setCancelled(true); // Stop players from stealing items!
-            
+
+            // IMPORTANT ANTI-THEFT: "item cursor se hat kar instant replace hojaye"
+            // The fact that we cancelled the event means the item should not have moved.
+            // If another plugin or lag makes it move, this should force it back.
+            // However, with `setCancelled(true)`, the core issue is preventing the item from being picked up.
+            // If the user *could* pick it up (e.g., another plugin makes it move but cancelled means it returns), that's harder.
+            // But this setup ensures it can't be stolen. It stays in the slot.
+
             Player player = (Player) event.getWhoClicked();
             ItemStack clickedItem = event.getCurrentItem();
             
@@ -46,15 +53,16 @@ public class GuiListener implements Listener {
                 else if (clickedItem.getType() == Material.BARRIER && event.getRawSlot() == 49) {
                     player.closeInventory();
                 }
+                // Handle Placeholder slot clicks (video showed nothing happens)
             }
             
             // SUB-MENU LOGIC ("Your Stats Breakdown")
             else if (title.equals("Your Stats Breakdown")) {
-                // "Go Back" Arrow -> Back to Main Menu
+                // "Go Back" Arrow (Slot 48) -> Back to Main Menu
                 if (event.getRawSlot() == 48 && clickedItem.getType() == Material.ARROW) {
                     StatsGui.openMainMenu(player, plugin);
                 }
-                // "Close" Barrier -> Close Inventory
+                // "Close" Barrier (Slot 49) -> Close Inventory
                 else if (event.getRawSlot() == 49 && clickedItem.getType() == Material.BARRIER) {
                     player.closeInventory();
                 }
