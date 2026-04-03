@@ -1,13 +1,18 @@
 package net.sujal;
 
 import net.sujal.api.StatsAPI;
+import net.sujal.commands.AdminCommand;
+import net.sujal.commands.StatsCommand;
 import net.sujal.config.ConfigManager;
 import net.sujal.data.DataStorage;
 import net.sujal.listeners.CombatListener;
 import net.sujal.listeners.GuiListener;
+import net.sujal.listeners.MechanicsListener;
 import net.sujal.listeners.PlayerListener;
+import net.sujal.stats.AttributeSyncTask;
 import net.sujal.stats.DamageCalculator;
 import net.sujal.stats.StatManager;
+import net.sujal.tasks.RegenTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,8 +35,12 @@ public class SkyblockCore extends JavaPlugin {
         this.api = new StatsAPI(this);
 
         registerListeners();
+        registerCommands();
         
-        // Reload safe - load online players if plugin is reloaded
+        // Start Actionbar & Regen Task (Runs every 1 second / 20 ticks)
+        new RegenTask(this).runTaskTimer(this, 20L, 20L);
+
+        // Reload safe - load online players
         for (Player player : Bukkit.getOnlinePlayers()) {
             statManager.loadPlayer(player);
         }
@@ -51,6 +60,13 @@ public class SkyblockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new GuiListener(), this);
         getServer().getPluginManager().registerEvents(new CombatListener(this), this);
+        getServer().getPluginManager().registerEvents(new MechanicsListener(this), this);
+        getServer().getPluginManager().registerEvents(new AttributeSyncTask(this), this);
+    }
+
+    private void registerCommands() {
+        getCommand("stats").setExecutor(new StatsCommand(this));
+        getCommand("sbadmin").setExecutor(new AdminCommand(this));
     }
 
     public ConfigManager getConfigManager() { return configManager; }
