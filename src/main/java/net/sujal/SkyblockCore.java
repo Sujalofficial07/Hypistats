@@ -41,6 +41,14 @@ public final class SkyblockCore extends JavaPlugin {
 
         getLogger().info("SkyblockCore enabled successfully!");
                 // Start Health Regen Task (Runs every 40 ticks = 2 seconds)
+                // PlaceholderAPI Registration
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new net.sujal.placeholders.StatsExpansion(statsAPI).register();
+            getLogger().info("PlaceholderAPI hooked successfully!");
+        } else {
+            getLogger().warning("PlaceholderAPI not found! Placeholders will not work.");
+        }
+        
         new net.sujal.tasks.HealthRegenTask(statsAPI).runTaskTimer(this, 40L, 40L);
                 // Start Action Bar UI (Runs every 10 ticks = 0.5 seconds for smooth updates)
         new net.sujal.tasks.ActionBarTask(statsAPI).runTaskTimer(this, 10L, 10L);
