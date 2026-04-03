@@ -1,0 +1,79 @@
+stats-menu:
+  title: "&8%player_name%'s Profile"
+  size: 54
+  items:
+    background:
+      material: BLACK_STAINED_GLASS_PANE
+      # List of slots to fill (0 to 53)
+      slots: [0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,25,26,27,28,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,50,51,52,53]
+      name: " "
+      lore: []
+    player_head:
+      material: PLAYER_HEAD
+      slot: 13
+      name: "&a&l%player_name%'s Stats"
+      lore: []
+    survival_stats:
+      material: GOLDEN_APPLE
+      slot: 20
+      name: "&c&lSurvival Stats"
+      lore:
+        - ""
+        - "&7✤ Health: &f%skyblock_health%"
+        - "&7✤ Defense: &f%skyblock_defense%"
+        - "&7✤ Health Regen: &f%skyblock_health_regen%"
+        - "&7✤ Vitality: &f%skyblock_vitality%"
+        - "&7✤ True Defense: &f%skyblock_true_defense%"
+        - ""
+    combat_stats:
+      material: IRON_SWORD
+      slot: 21
+      name: "&c&lCombat Stats"
+      lore:
+        - ""
+        - "&7✤ Strength: &f%skyblock_strength%"
+        - "&7✤ Crit Chance: &f%skyblock_crit_chance%%"
+        - "&7✤ Crit Damage: &f%skyblock_crit_damage%%"
+        - "&7✤ Ferocity: &f%skyblock_ferocity%"
+        - "&7✤ Bonus Attack Speed: &f%skyblock_bonus_attack_speed%%"
+        - ""
+    magic_stats:
+      material: BLAZE_POWDER
+      slot: 22
+      name: "&b&lMagic Stats"
+      lore:
+        - ""
+        - "&7✤ Intelligence: &f%skyblock_intelligence%"
+        - "&7✤ Ability Damage: &f%skyblock_ability_damage%%"
+        - "&7✤ Mana Regen: &f%skyblock_mana_regen%"
+        - ""
+    utility_stats:
+      material: FEATHER
+      slot: 23
+      name: "&f&lUtility Stats"
+      lore:
+        - ""
+        - "&7✤ Speed: &f%skyblock_speed%"
+        - "&7✤ Magic Find: &f%skyblock_magic_find%"
+        - "&7✤ Pet Luck: &f%skyblock_pet_luck%"
+        - "&7✤ Sea Creature Chance: &f%skyblock_sea_creature_chance%%"
+        - ""
+    gathering_stats:
+      material: DIAMOND_PICKAXE
+      slot: 24
+      name: "&6&lGathering Stats"
+      lore:
+        - ""
+        - "&7✤ Mining Speed: &f%skyblock_mining_speed%"
+        - "&7✤ Mining Fortune: &f%skyblock_mining_fortune%"
+        - "&7✤ Farming Fortune: &f%skyblock_farming_fortune%"
+        - "&7✤ Foraging Fortune: &f%skyblock_foraging_fortune%"
+        - "&7✤ Pristine: &f%skyblock_pristine%"
+        - ""
+    close_button:
+      material: BARRIER
+      slot: 49
+      name: "&c&lClose"
+      lore: []
+      action: "CLOSE"
+      
