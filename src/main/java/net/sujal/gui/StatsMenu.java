@@ -19,50 +19,93 @@ import java.util.List;
 
 public class StatsMenu {
 
-    public static void open(Player player, StatsAPI statsAPI) {
-        Inventory inv = Bukkit.createInventory(new MenuHolder(), 54, Component.text("SkyBlock Profile", NamedTextColor.DARK_GRAY));
+    // viewer = Jo menu dekh raha hai, target = Jiske stats dekhne hain
+    public static void open(Player viewer, Player target, StatsAPI statsAPI) {
+        String title = viewer.equals(target) ? "Your SkyBlock Profile" : target.getName() + "'s Profile";
+        Inventory inv = Bukkit.createInventory(new MenuHolder(), 54, Component.text(title, NamedTextColor.DARK_GRAY));
 
-        // Fill background with black glass panes
+        // Background Glass
         ItemStack glass = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta glassMeta = glass.getItemMeta();
         glassMeta.displayName(Component.text(" "));
         glass.setItemMeta(glassMeta);
         for (int i = 0; i < 54; i++) inv.setItem(i, glass);
 
-        // Player Head
+        // Target Player Head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        headMeta.setOwningPlayer(player);
-        headMeta.displayName(Component.text("Your SkyBlock Profile", NamedTextColor.GREEN).decorate(TextDecoration.BOLD));
+        headMeta.setOwningPlayer(target);
+        headMeta.displayName(Component.text(target.getName() + "'s Stats", NamedTextColor.GREEN).decorate(TextDecoration.BOLD));
         head.setItemMeta(headMeta);
         inv.setItem(13, head);
 
-        // Stats Items
-        inv.setItem(20, createStatItem(Material.GOLDEN_APPLE, "Health", NamedTextColor.RED, statsAPI.getFinalStat(player.getUniqueId(), StatType.HEALTH)));
-        inv.setItem(21, createStatItem(Material.IRON_CHESTPLATE, "Defense", NamedTextColor.GREEN, statsAPI.getFinalStat(player.getUniqueId(), StatType.DEFENSE)));
-        inv.setItem(22, createStatItem(Material.BLAZE_POWDER, "Strength", NamedTextColor.RED, statsAPI.getFinalStat(player.getUniqueId(), StatType.STRENGTH)));
-        inv.setItem(23, createStatItem(Material.SUGAR, "Speed", NamedTextColor.WHITE, statsAPI.getFinalStat(player.getUniqueId(), StatType.SPEED)));
-        inv.setItem(24, createStatItem(Material.BONE, "Crit Chance", NamedTextColor.BLUE, statsAPI.getFinalStat(player.getUniqueId(), StatType.CRIT_CHANCE)));
-        inv.setItem(29, createStatItem(Material.PAPER, "Crit Damage", NamedTextColor.BLUE, statsAPI.getFinalStat(player.getUniqueId(), StatType.CRIT_DAMAGE)));
-        inv.setItem(30, createStatItem(Material.ENCHANTED_BOOK, "Intelligence", NamedTextColor.AQUA, statsAPI.getFinalStat(player.getUniqueId(), StatType.INTELLIGENCE)));
-        inv.setItem(31, createStatItem(Material.GOLD_NUGGET, "Magic Find", NamedTextColor.AQUA, statsAPI.getFinalStat(player.getUniqueId(), StatType.MAGIC_FIND)));
-        inv.setItem(32, createStatItem(Material.DIAMOND_PICKAXE, "Mining Speed", NamedTextColor.GOLD, statsAPI.getFinalStat(player.getUniqueId(), StatType.MINING_SPEED)));
-        inv.setItem(33, createStatItem(Material.GOLDEN_HOE, "Farming Fortune", NamedTextColor.GOLD, statsAPI.getFinalStat(player.getUniqueId(), StatType.FARMING_FORTUNE)));
+        // 1. SURVIVAL STATS (Golden Apple)
+        inv.setItem(20, createCategoryItem(Material.GOLDEN_APPLE, "Survival Stats", NamedTextColor.RED,
+                "Health", statsAPI.getFinalStat(target.getUniqueId(), StatType.HEALTH),
+                "Defense", statsAPI.getFinalStat(target.getUniqueId(), StatType.DEFENSE),
+                "Health Regen", statsAPI.getFinalStat(target.getUniqueId(), StatType.HEALTH_REGEN),
+                "Vitality", statsAPI.getFinalStat(target.getUniqueId(), StatType.VITALITY),
+                "True Defense", statsAPI.getFinalStat(target.getUniqueId(), StatType.TRUE_DEFENSE)));
 
-        player.openInventory(inv);
+        // 2. COMBAT STATS (Iron Sword)
+        inv.setItem(21, createCategoryItem(Material.IRON_SWORD, "Combat Stats", NamedTextColor.RED,
+                "Strength", statsAPI.getFinalStat(target.getUniqueId(), StatType.STRENGTH),
+                "Crit Chance", statsAPI.getFinalStat(target.getUniqueId(), StatType.CRIT_CHANCE),
+                "Crit Damage", statsAPI.getFinalStat(target.getUniqueId(), StatType.CRIT_DAMAGE),
+                "Ferocity", statsAPI.getFinalStat(target.getUniqueId(), StatType.FEROCITY),
+                "Bonus Attack Speed", statsAPI.getFinalStat(target.getUniqueId(), StatType.BONUS_ATTACK_SPEED)));
+
+        // 3. MAGIC STATS (Blaze Powder)
+        inv.setItem(22, createCategoryItem(Material.BLAZE_POWDER, "Magic Stats", NamedTextColor.AQUA,
+                "Intelligence", statsAPI.getFinalStat(target.getUniqueId(), StatType.INTELLIGENCE),
+                "Ability Damage", statsAPI.getFinalStat(target.getUniqueId(), StatType.ABILITY_DAMAGE),
+                "Mana Regen", statsAPI.getFinalStat(target.getUniqueId(), StatType.MANA_REGEN)));
+
+        // 4. UTILITY STATS (Feather)
+        inv.setItem(23, createCategoryItem(Material.FEATHER, "Utility Stats", NamedTextColor.WHITE,
+                "Speed", statsAPI.getFinalStat(target.getUniqueId(), StatType.SPEED),
+                "Magic Find", statsAPI.getFinalStat(target.getUniqueId(), StatType.MAGIC_FIND),
+                "Pet Luck", statsAPI.getFinalStat(target.getUniqueId(), StatType.PET_LUCK),
+                "Sea Creature Chance", statsAPI.getFinalStat(target.getUniqueId(), StatType.SEA_CREATURE_CHANCE)));
+
+        // 5. GATHERING STATS (Diamond Pickaxe)
+        inv.setItem(24, createCategoryItem(Material.DIAMOND_PICKAXE, "Gathering Stats", NamedTextColor.GOLD,
+                "Mining Speed", statsAPI.getFinalStat(target.getUniqueId(), StatType.MINING_SPEED),
+                "Mining Fortune", statsAPI.getFinalStat(target.getUniqueId(), StatType.MINING_FORTUNE),
+                "Farming Fortune", statsAPI.getFinalStat(target.getUniqueId(), StatType.FARMING_FORTUNE),
+                "Foraging Fortune", statsAPI.getFinalStat(target.getUniqueId(), StatType.FORAGING_FORTUNE),
+                "Pristine", statsAPI.getFinalStat(target.getUniqueId(), StatType.PRISTINE)));
+
+        // Close Button
+        ItemStack close = new ItemStack(Material.BARRIER);
+        ItemMeta closeMeta = close.getItemMeta();
+        closeMeta.displayName(Component.text("Close", NamedTextColor.RED).decorate(TextDecoration.BOLD));
+        close.setItemMeta(closeMeta);
+        inv.setItem(49, close);
+
+        viewer.openInventory(inv);
     }
 
-    private static ItemStack createStatItem(Material mat, String name, NamedTextColor color, double value) {
+    private static ItemStack createCategoryItem(Material mat, String title, NamedTextColor titleColor, Object... stats) {
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(name, color).decorate(TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        meta.displayName(Component.text(title, titleColor).decorate(TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
         
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text(""));
-        lore.add(Component.text("Base: ", NamedTextColor.GRAY).append(Component.text(value, color)).decoration(TextDecoration.ITALIC, false));
+        
+        for (int i = 0; i < stats.length; i += 2) {
+            String statName = (String) stats[i];
+            double statValue = (double) stats[i + 1];
+            
+            // Format lore: ✤ Strength: 100
+            lore.add(Component.text("✤ " + statName + ": ", NamedTextColor.GRAY)
+                    .append(Component.text(statValue, NamedTextColor.WHITE))
+                    .decoration(TextDecoration.ITALIC, false));
+        }
+        
         lore.add(Component.text(""));
         meta.lore(lore);
-        
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         return item;
