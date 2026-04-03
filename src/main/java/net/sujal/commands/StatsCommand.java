@@ -18,7 +18,7 @@ public class StatsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player player) {
-            StatsGui.open(player, plugin);
+            StatsGui.openMainMenu(player, plugin);
             return true;
         }
         sender.sendMessage("Only players can use this command.");
