@@ -7,8 +7,9 @@ import net.sujal.data.ProfileData;
 import net.sujal.events.PlayerStatChangeEvent;
 import net.sujal.stats.shared.StatType;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -33,8 +34,6 @@ public class StatsAPIImpl implements StatsAPI {
 
     @Override
     public double getFinalStat(UUID uuid, StatType stat) {
-        // Here you would add StatModifiers (Armor, Pets, etc.)
-        // For now, base stat is the final stat until equipment systems are added.
         return getBaseStat(uuid, stat);
     }
 
@@ -45,7 +44,6 @@ public class StatsAPIImpl implements StatsAPI {
         
         double oldValue = profile.getBaseStat(stat);
         
-        // Event
         PlayerStatChangeEvent event = new PlayerStatChangeEvent(uuid, stat, oldValue, value);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
@@ -69,26 +67,38 @@ public class StatsAPIImpl implements StatsAPI {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || !player.isOnline()) return;
 
-        // Health Sync
-        double maxHealth = getFinalStat(uuid, StatType.HEALTH);
+        // Sync Speed
         double speed = getFinalStat(uuid, StatType.SPEED);
-        
-        // Speed scaling (100 = 0.2f Bukkit default)
-        float walkSpeed = (float) Math.min(1.0, (speed / 100.0) * 0.2f);
+        float walkSpeed = (float) Math.max(0.01, Math.min(1.0, (speed / 100.0) * 0.2f));
         player.setWalkSpeed(walkSpeed);
 
-        // Bukkit Max Health Scaling
-        // We keep max health internal, and scale Bukkit visual hearts to 40 (20 hearts)
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40.0);
-        player.setHealthScale(40.0);
+        // SYNC HEALTH: Hypixel Style (Max 20 Visual Hearts = 40.0 Bukkit Health)
+        double maxCustomHealth = getFinalStat(uuid, StatType.HEALTH);
+        double currentCustomHealth = getHealth(uuid);
+        
+        // Clamp current health so it doesn't exceed max
+        if (currentCustomHealth > maxCustomHealth) {
+            setHealth(uuid, maxCustomHealth);
+            currentCustomHealth = maxCustomHealth;
+        }
+
+        // Bukkit Visual Health Math
+        double visualMaxHealth = 40.0; // 40.0 means exactly 20 Hearts screen limit
+
+        AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (maxHealthAttr != null) {
+            maxHealthAttr.setBaseValue(visualMaxHealth);
+        }
+        player.setHealthScale(visualMaxHealth);
         player.setHealthScaled(true);
         
-        // Sync current health pool to Bukkit health percentage
-        double currentHealth = getHealth(uuid);
-        if (currentHealth > maxHealth) setHealth(uuid, maxHealth);
+        // Calculate Bukkit health percentage based on custom health pool
+        double pct = currentCustomHealth / maxCustomHealth;
+        double bukkitHealth = visualMaxHealth * pct;
         
-        double pct = getHealth(uuid) / maxHealth;
-        player.setHealth(Math.max(1.0, 40.0 * pct));
+        // Safety lock: ensure it stays between 0.1 and 40.0 to prevent glitches
+        bukkitHealth = Math.max(0.1, Math.min(bukkitHealth, visualMaxHealth));
+        player.setHealth(bukkitHealth);
     }
 
     @Override
@@ -144,7 +154,7 @@ public class StatsAPIImpl implements StatsAPI {
     public void setMana(UUID uuid, double amount) {
         ProfileData profile = getCurrentProfile(uuid);
         if (profile == null) return;
-        double maxMana = getFinalStat(uuid, StatType.INTELLIGENCE) + 100; // Formula
+        double maxMana = getFinalStat(uuid, StatType.INTELLIGENCE) + 100;
         profile.setCurrentPool(StatType.MANA, Math.max(0, Math.min(amount, maxMana)));
     }
 }
