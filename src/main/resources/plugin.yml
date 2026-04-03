@@ -1,0 +1,6 @@
+name: SkyblockCore
+version: '${project.version}'
+main: net.sujal.SkyblockCore
+api-version: '1.21'
+authors: [ Sujal ]
+description: A Hypixel Skyblock inspired core stats system.
