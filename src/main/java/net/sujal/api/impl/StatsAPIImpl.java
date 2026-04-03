@@ -62,41 +62,38 @@ public class StatsAPIImpl implements StatsAPI {
         setStat(uuid, stat, Math.max(0, getBaseStat(uuid, stat) - value));
     }
 
-    @Override
+        @Override
     public void recalculateStats(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || !player.isOnline()) return;
 
-        // Sync Speed
+        // SYNC SPEED: Cap at 400 (Configurable limit concept)
         double speed = getFinalStat(uuid, StatType.SPEED);
-        float walkSpeed = (float) Math.max(0.01, Math.min(1.0, (speed / 100.0) * 0.2f));
+        // Ensure speed doesn't exceed 400 (4.0x normal speed). Bukkit Max Walk Speed is 1.0f
+        double clampedSpeed = Math.min(speed, 400.0);
+        float walkSpeed = (float) Math.max(0.01, (clampedSpeed / 100.0) * 0.2f);
         player.setWalkSpeed(walkSpeed);
 
         // SYNC HEALTH: Hypixel Style (Max 20 Visual Hearts = 40.0 Bukkit Health)
         double maxCustomHealth = getFinalStat(uuid, StatType.HEALTH);
         double currentCustomHealth = getHealth(uuid);
         
-        // Clamp current health so it doesn't exceed max
         if (currentCustomHealth > maxCustomHealth) {
             setHealth(uuid, maxCustomHealth);
             currentCustomHealth = maxCustomHealth;
         }
 
-        // Bukkit Visual Health Math
-        double visualMaxHealth = 40.0; // 40.0 means exactly 20 Hearts screen limit
-
-        AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        double visualMaxHealth = 40.0;
+        org.bukkit.attribute.AttributeInstance maxHealthAttr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
         if (maxHealthAttr != null) {
             maxHealthAttr.setBaseValue(visualMaxHealth);
         }
         player.setHealthScale(visualMaxHealth);
         player.setHealthScaled(true);
         
-        // Calculate Bukkit health percentage based on custom health pool
         double pct = currentCustomHealth / maxCustomHealth;
         double bukkitHealth = visualMaxHealth * pct;
         
-        // Safety lock: ensure it stays between 0.1 and 40.0 to prevent glitches
         bukkitHealth = Math.max(0.1, Math.min(bukkitHealth, visualMaxHealth));
         player.setHealth(bukkitHealth);
     }
