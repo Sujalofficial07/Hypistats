@@ -4,6 +4,7 @@ import net.sujal.SkyblockCore;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.UUID; // <-- YEH LINE MISSING THI
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DamageCalculator {
