@@ -29,7 +29,7 @@ public class CombatListener implements Listener {
         this.statsAPI = statsAPI;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof LivingEntity target)) return;
 
@@ -43,20 +43,28 @@ public class CombatListener implements Listener {
 
         if (attacker == null) return;
 
-        // Prevent Ferocity loop
         if (activeFerocity.contains(attacker.getUniqueId())) return;
 
-        double baseDamage = event.getDamage();
+        // --- HYPIXEL ACCURATE DAMAGE FORMULA ---
+        // Vanilla weapon damage (Fist = 1, Diamond Sword = 7)
+        double vanillaDamage = event.getDamage(); 
+        
+        // Hypixel base adds 5 to everything by default
+        double baseDamage = 5 + vanillaDamage; 
+
         double strength = statsAPI.getFinalStat(attacker.getUniqueId(), StatType.STRENGTH);
         double critChance = statsAPI.getFinalStat(attacker.getUniqueId(), StatType.CRIT_CHANCE);
         double critDamage = statsAPI.getFinalStat(attacker.getUniqueId(), StatType.CRIT_DAMAGE);
         double ferocity = statsAPI.getFinalStat(attacker.getUniqueId(), StatType.FEROCITY);
 
-        // Calculate Final Damage
+        // Step 1: Apply Strength
+        // Damage = Base * (1 + Strength / 100)
         double finalDamage = baseDamage * (1 + (strength / 100));
         boolean isCrit = false;
         
+        // Step 2: Apply Critical Hit
         if (Math.random() * 100 <= critChance) {
+            // Add Crit Damage Multiplier
             finalDamage = finalDamage * (1 + (critDamage / 100));
             isCrit = true;
         }
@@ -78,6 +86,7 @@ public class CombatListener implements Listener {
             }
         }
     }
+
 
     private void triggerFerocity(Player attacker, LivingEntity target, double damage, int strikes) {
         for (int i = 1; i <= strikes; i++) {
