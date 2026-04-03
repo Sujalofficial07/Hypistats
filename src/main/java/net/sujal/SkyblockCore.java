@@ -58,7 +58,7 @@ public class SkyblockCore extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        getServer().getPluginManager().registerEvents(new GuiListener(), this);
+        getServer().getPluginManager().registerEvents(new GuiListener(this), this);
         getServer().getPluginManager().registerEvents(new CombatListener(this), this);
         getServer().getPluginManager().registerEvents(new MechanicsListener(this), this);
         getServer().getPluginManager().registerEvents(new AttributeSyncTask(this), this);
