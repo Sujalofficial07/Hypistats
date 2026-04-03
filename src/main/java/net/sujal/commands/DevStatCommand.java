@@ -64,6 +64,12 @@ public class DevStatCommand implements CommandExecutor {
             sender.sendMessage(Component.text(statType.name() + " = " + statsAPI.getFinalStat(target.getUniqueId(), statType), NamedTextColor.GREEN));
             return true;
         }
+       if (action.equals("reload")) {
+           SkyblockCore.getInstance().getConfigManager().reloadConfig();
+           sender.sendMessage(Component.text("Config aur Menus reload ho gaye!", NamedTextColor.GREEN));
+           return true;
+        }
+    
 
         if (args.length < 4) return false;
         double value = Double.parseDouble(args[3]);
