@@ -40,6 +40,7 @@ public class AttributeSyncTask implements Listener {
                 // 100 Attack speed = vanilla default (4.0). 200 = double.
                 if (atkSpeedAttr != null) atkSpeedAttr.setBaseValue(4.0 * (value / 100.0));
                 break;
+            // Mechanics for other stats are handled in MechanicsListener
         }
     }
 }
