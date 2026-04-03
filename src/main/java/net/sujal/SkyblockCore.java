@@ -42,6 +42,12 @@ public final class SkyblockCore extends JavaPlugin {
         getLogger().info("SkyblockCore enabled successfully!");
                 // Start Health Regen Task (Runs every 40 ticks = 2 seconds)
         new net.sujal.tasks.HealthRegenTask(statsAPI).runTaskTimer(this, 40L, 40L);
+                // Start Action Bar UI (Runs every 10 ticks = 0.5 seconds for smooth updates)
+        new net.sujal.tasks.ActionBarTask(statsAPI).runTaskTimer(this, 10L, 10L);
+
+        // Start Mana Regen Task (Runs every 20 ticks = 1 second)
+        new net.sujal.tasks.ManaRegenTask(statsAPI).runTaskTimer(this, 20L, 20L);
+        
         
     }
 
